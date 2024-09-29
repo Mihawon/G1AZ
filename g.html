@@ -1,0 +1,77 @@
+<html>
+
+<head>
+  <meta charser='UTF-8'>
+  <meta name='viewport',content='width=device-width, initial-scale=1.0'>
+   <style>
+    body {
+      margin:0;	    
+      width:1400;
+      height:200;
+      background-color:#343434;	    
+    }
+    	    
+  </style>
+</head>
+<body>
+  <canvas id='canvas'></canvas>
+  <script>
+var canvas=document.getElementById('canvas');	  
+var can=canvas.getContext('2d');
+
+canvas.width=window.innerWidth-100;
+canvas.height=window.innerHeight-100;
+
+var dino={
+	x:10,
+	y:200,
+	width:50,
+	height:50,
+	draw(){	
+		can.fillStyle='green';
+		can.fillRect(this.x,this.y,this.width,this.height);
+	}
+}
+
+class Danger{
+	constructor(){
+		this.x = 500;
+		this.y = 200;
+		this.width=50;
+		this.height=50;
+	}
+	draw(){	
+		can.fillStyle='red';
+		can.fillRect(this.x,this.y,this.width,this.height);
+	}
+}
+
+var time=119;
+var dangers=[];
+
+function timer(){
+	requestAnimationFrame(timer);
+	time++;
+	can.clearRect(0,0,canvas.width,canvas.height);
+
+	if(time%120===0){	
+		var danger=new Danger();
+		dangers.push(danger);
+	}
+	dangers.forEach(function(a,i,o){
+		if(a.x<0){
+			o.splice(i,1);
+		}
+		a.x--;
+		a.draw();
+	});
+
+	dino.draw();
+}
+
+timer();
+</script>
+
+</body>
+
+</html>
