@@ -7,11 +7,13 @@
    <style>
     body {
       margin:0;	    
-      width:1400;
-      height:200;
       background-color:#343434;	    
     }
     	    
+canvas{
+	background-color:#fff8e7;
+}
+
   </style>
 </head>
 <body>
@@ -20,20 +22,20 @@
 var canvas=document.getElementById('canvas');	  
 var can=canvas.getContext('2d');
 
-canvas.width=window.innerWidth-100;
-canvas.height=window.innerHeight-100;
+canvas.width=1200;
+canvas.height=240;
 
 var animation;
 var jump = false;
 var jumpTimer=0
-var time=59;
+var time=99;
 var dangers=[];
 
 var dino={
-	x:10,
-	y:200,
-	width:50,
-	height:50,
+	x:100,
+	y:180,
+	width:48,
+	height:48,
 	draw(){	
 		can.fillStyle='green';
 		can.fillRect(this.x,this.y,this.width,this.height);
@@ -42,10 +44,10 @@ var dino={
 
 class Danger{
 	constructor(){
-		this.x = 500;
-		this.y = 200;
-		this.width=50;
-		this.height=50;
+		this.x = 1150;
+		this.y = 180;
+		this.width=48;
+		this.height=48;
 	}
 	draw(){	
 		can.fillStyle='red';
@@ -62,7 +64,7 @@ document.addEventListener('keydown',function(e){
 function crushCheck(dino,danger){
 	var crushx = danger.x-(dino.x+dino.width);
 	var crushy = danger.y-(dino.y+dino.height);
-	if (crushx < 0 && crushy < 0){
+	if (danger.x >= 50 && crushx < 0 && crushy < -5){
 		can.clearRect(0,0,canvas.width,canvas.height);
 		cancelAnimationFrame(animation);
 	}
@@ -73,26 +75,27 @@ function timer(){
 	time++;
 	can.clearRect(0,0,canvas.width,canvas.height);
 
-	if(time%60===0){	
+	if(time%100===0){	
 		var danger=new Danger();
 		dangers.push(danger);
 	}
 	dangers.forEach(function(a,i,o){
-		if(a.x<0){
+		if(a.x< -50){
 			o.splice(i,1);
 		}
-		a.x-=3;
+		a.x-=4;
 		crushCheck(dino,a);
 		a.draw();
 	});
 
 	if (jump == true){
-		dino.y-=3;
+		dino.y-=5;
 		jumpTimer++;
-	} else if (dino.y < 200 && jump == false){
-		dino.y+=3;
 	}
-	if (jumpTimer>100){
+	else if (dino.y < 180 && jump == false){
+		dino.y+=5;
+	}
+	if (jumpTimer>30){
 		jump = false;
 		jumpTimer=0;
 	}
