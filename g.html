@@ -1,3 +1,4 @@
+<!doctype html>
 <html>
 
 <head>
@@ -21,6 +22,12 @@ var can=canvas.getContext('2d');
 
 canvas.width=window.innerWidth-100;
 canvas.height=window.innerHeight-100;
+
+var animation;
+var jump = false;
+var jumpTimer=0
+var time=59;
+var dangers=[];
 
 var dino={
 	x:10,
@@ -46,15 +53,27 @@ class Danger{
 	}
 }
 
-var time=119;
-var dangers=[];
+document.addEventListener('keydown',function(e){
+	if(e.code === 'Space'){
+		jump = true;
+	}
+});
+
+function crushCheck(dino,danger){
+	var crushx = danger.x-(dino.x+dino.width);
+	var crushy = danger.y-(dino.y+dino.height);
+	if (crushx < 0 && crushy < 0){
+		can.clearRect(0,0,canvas.width,canvas.height);
+		cancelAnimationFrame(animation);
+	}
+}
 
 function timer(){
-	requestAnimationFrame(timer);
+	animation = requestAnimationFrame(timer);
 	time++;
 	can.clearRect(0,0,canvas.width,canvas.height);
 
-	if(time%120===0){	
+	if(time%60===0){	
 		var danger=new Danger();
 		dangers.push(danger);
 	}
@@ -62,14 +81,27 @@ function timer(){
 		if(a.x<0){
 			o.splice(i,1);
 		}
-		a.x--;
+		a.x-=3;
+		crushCheck(dino,a);
 		a.draw();
 	});
+
+	if (jump == true){
+		dino.y-=3;
+		jumpTimer++;
+	} else if (dino.y < 200 && jump == false){
+		dino.y+=3;
+	}
+	if (jumpTimer>100){
+		jump = false;
+		jumpTimer=0;
+	}
 
 	dino.draw();
 }
 
 timer();
+
 </script>
 
 </body>
