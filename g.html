@@ -22,22 +22,20 @@ background-color:#fff8e7;
 //drawStage
 var canvas=document.getElementById('canvas');	  
 var can=canvas.getContext('2d');
-canvas.width=1200;
-canvas.height=240;
-
 var animation;
-var jump = false;
-var jumpTimer=0
 var time=99;
-var dangers=[];
 var score=0;
+canvas.width=600;
+canvas.height=100;
 
 //Player
+var jump = false;
+var jumpTimer=0
 var imgDino = new Image();
 imgDino.src = 'dino.png';
 var dino={
-	x:100,
-	y:180,
+	x:60,
+	y:50,
 	width:36,
 	height:48,
 	draw(){	
@@ -54,14 +52,15 @@ document.addEventListener('keydown',function(e){
 
 
 //Enemy
+var dangers=[];
 var imgDang = new Image();
 imgDang.src = 'danger.png';
 class Danger{
 	constructor(){
-		this.x = 1150;
-		this.y = 180;
-		this.width=48;
-		this.height=48;
+		this.x = 648;
+		this.y = 62;
+		this.width=36;
+		this.height=36;
 	}
 	draw(){	
 		can.fillStyle='red';
@@ -69,10 +68,22 @@ class Danger{
 		can.drawImage(imgDang,this.x,this.y);
 	}
 }
+
+
+//gameScore
+function drawScore(){
+	x=500;
+	y=120;
+	can.clearRect(this.x,this.y,canvas.width,canvas.height);
+	can.fillStyle='#343434';
+	can.font='24px Arial';
+	can.fillText(score,10,30);
+}
+
 function crushCheck(dino,danger){
 	var crushx = danger.x-(dino.x+dino.width);
 	var crushy = danger.y-(dino.y+dino.height);
-	if (danger.x >= 50 && crushx < 0 && crushy < -5){
+	if (danger.x >= 32 && crushx < 0 && crushy < 0){
 		can.clearRect(0,0,canvas.width,canvas.height);
 		cancelAnimationFrame(animation);
 	}
@@ -92,6 +103,7 @@ function timer(){
 	dangers.forEach(function(a,i,o){
 		if(a.x< -50){
 			o.splice(i,1);
+			score++;
 		}
 		a.x-=4;
 		crushCheck(dino,a);
@@ -99,19 +111,21 @@ function timer(){
 	});
 
 	if (jump == true){
-		dino.y-=5;
+		dino.y-=3;
 		jumpTimer++;
 	}
-	else if (dino.y < 180 && jump == false){
-		dino.y+=5;
-	}
-	if (jumpTimer>30){
+	if (dino.y < 50 && jumpTimer>30){
 		jump = false;
 		jumpTimer=0;
 	}
-
+	if (dino.y < 50 && jump == false){
+		dino.y+=5;
+	}
+	if (dino.y > 50){
+		dino.y=50;
+	}
 	dino.draw();
-	score++;
+	drawScore();
 }
 
 //playGame
