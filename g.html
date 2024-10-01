@@ -2,26 +2,26 @@
 <html>
 
 <head>
-  <meta charser='UTF-8'>
-  <meta name='viewport',content='width=device-width, initial-scale=1.0'>
-   <style>
-    body {
-      margin:0;	    
-      background-color:#343434;	    
-    }
+<meta charser='UTF-8'>
+<meta name='viewport',content='width=device-width, initial-scale=1.0'>
+<style>
+body {
+margin:0;	    
+background-color:#343434;	    
+}
     	    
 canvas{
-	background-color:#fff8e7;
+background-color:#fff8e7;
 }
 
-  </style>
+</style>
 </head>
 <body>
-  <canvas id='canvas'></canvas>
-  <script>
+<canvas id='canvas'></canvas>
+<script>
+//drawStage
 var canvas=document.getElementById('canvas');	  
 var can=canvas.getContext('2d');
-
 canvas.width=1200;
 canvas.height=240;
 
@@ -30,18 +30,32 @@ var jump = false;
 var jumpTimer=0
 var time=99;
 var dangers=[];
+var score=0;
 
+//Player
+var imgDino = new Image();
+imgDino.src = 'dino.png';
 var dino={
 	x:100,
 	y:180,
-	width:48,
+	width:36,
 	height:48,
 	draw(){	
 		can.fillStyle='green';
 		can.fillRect(this.x,this.y,this.width,this.height);
+		can.drawImage(imgDino, this.x,this.y);
 	}
 }
+document.addEventListener('keydown',function(e){
+	if(e.code === 'Space'){
+		jump = true;
+	}
+});
 
+
+//Enemy
+var imgDang = new Image();
+imgDang.src = 'danger.png';
 class Danger{
 	constructor(){
 		this.x = 1150;
@@ -52,15 +66,9 @@ class Danger{
 	draw(){	
 		can.fillStyle='red';
 		can.fillRect(this.x,this.y,this.width,this.height);
+		can.drawImage(imgDang,this.x,this.y);
 	}
 }
-
-document.addEventListener('keydown',function(e){
-	if(e.code === 'Space'){
-		jump = true;
-	}
-});
-
 function crushCheck(dino,danger){
 	var crushx = danger.x-(dino.x+dino.width);
 	var crushy = danger.y-(dino.y+dino.height);
@@ -70,6 +78,8 @@ function crushCheck(dino,danger){
 	}
 }
 
+
+//mainGame
 function timer(){
 	animation = requestAnimationFrame(timer);
 	time++;
@@ -101,12 +111,12 @@ function timer(){
 	}
 
 	dino.draw();
+	score++;
 }
 
+//playGame
 timer();
 
 </script>
-
 </body>
-
 </html>
