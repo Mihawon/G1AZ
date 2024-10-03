@@ -1,7 +1,6 @@
 <!doctype html>
 <html>
 <head>
-
 <meta charser='UTF-8'>
 <meta name='viewport',content='width=device-width, initial-scale=1.0'>
 
@@ -15,14 +14,25 @@ canvas{
 background-color:#fff8e7;
 }
 </style>
-
 </head>
 
 <body>
 <canvas id='canvas'></canvas>
-
 <script>
-//^001 drawStage
+/*	
+	INDEX
+	100: drawStage
+	+10: gameScore
+	+20: gameLevel
+	200: dino(player)
+	300: danger(enemy)
+	400: mainGame
+	999: playGame
+
+        ^nnn: find 
+*/
+
+//^100 drawStage
 var canvas=document.getElementById('canvas');	  
 var can=canvas.getContext('2d');
 var animation;
@@ -31,7 +41,31 @@ var score=0;
 canvas.width=600;
 canvas.height=100;
 
-//^002 Player
+//^110 gameScore
+function drawScore(){
+	x=540;
+	y=40;
+	can.fillStyle='#343434';
+	can.font='36px Arial';
+	can.fillText(score,this.x,this.y);
+}
+
+function crushCheck(dino,danger){
+	var crushx = danger.x-(dino.x+dino.width);
+	var crushy = danger.y-(dino.y+dino.height);
+	if (danger.x >= 32 && crushx < 0 && crushy < 0){
+		can.clearRect(0,0,canvas.width,canvas.height);
+		cancelAnimationFrame(animation);
+	}
+}
+
+//^120 gameLevel
+var Level = { 100:0,
+	200:10,
+	300:33
+};
+
+//^200 dino(Player)
 var jump = false;
 var jumpTimer=0
 var imgDino = new Image();
@@ -54,7 +88,7 @@ document.addEventListener('keydown',function(e){
 });
 
 
-//^003 Enemy
+//^300 danger(enemy) 
 var dangers=[];
 var imgDang = new Image();
 imgDang.src = 'danger.png';
@@ -73,26 +107,7 @@ class Danger{
 }
 
 
-//^004 gameScore
-function drawScore(){
-	x=540;
-	y=40;
-	can.fillStyle='#343434';
-	can.font='36px Arial';
-	can.fillText(score,this.x,this.y);
-}
-
-function crushCheck(dino,danger){
-	var crushx = danger.x-(dino.x+dino.width);
-	var crushy = danger.y-(dino.y+dino.height);
-	if (danger.x >= 32 && crushx < 0 && crushy < 0){
-		can.clearRect(0,0,canvas.width,canvas.height);
-		cancelAnimationFrame(animation);
-	}
-}
-
-
-//^005 mainGame
+//^400 mainGame
 function timer(){
 	animation = requestAnimationFrame(timer);
 	time++;
@@ -130,9 +145,6 @@ function timer(){
 	drawScore();
 }
 
-//^999playGame
+//^999 playGame
 timer();
-
-</script>
-</body>
-</html>
+</script></body></html>
