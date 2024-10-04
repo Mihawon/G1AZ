@@ -1,6 +1,5 @@
 <!doctype html>
-<html>
-<head>
+<html><head>
 <meta charser='UTF-8'>
 <meta name='viewport',content='width=device-width, initial-scale=1.0'>
 
@@ -13,21 +12,22 @@ background-color:#343434;
 canvas{
 background-color:#fff8e7;
 }
-</style>
-</head>
+</style></head>
 
 <body>
 <canvas id='canvas'></canvas>
 <script>
 /*	
 	INDEX
-	100: drawStage
-	+10: gameScore
-	+20: gameLevel
-	200: dino(player)
-	300: danger(enemy)
-	400: mainGame
-	999: playGame
+	^100: drawStage
+	 +10: gameScore
+	  +1: gameOverCheck
+	 +20: gameLevel
+	^200: dino(player)
+	 +10: gameKey
+	^300: danger(enemy)
+	^400: mainGame
+	^999: playGame
 
         ^nnn: find 
 */
@@ -50,6 +50,7 @@ function drawScore(){
 	can.fillText(score,this.x,this.y);
 }
 
+//^111 gameOverCheck
 function crushCheck(dino,danger){
 	var crushx = danger.x-(dino.x+dino.width);
 	var crushy = danger.y-(dino.y+dino.height);
@@ -67,6 +68,7 @@ var Level = { 100:0,
 
 //^200 dino(Player)
 var jump = false;
+var retry = false;
 var jumpTimer=0
 var imgDino = new Image();
 imgDino.src = 'dino.png';
@@ -81,12 +83,17 @@ var dino={
 		can.drawImage(imgDino, this.x,this.y);
 	}
 }
+//^210 gamekey
 document.addEventListener('keydown',function(e){
 	if(e.code === 'Space'){
 		jump = true;
 	}
 });
-
+document.addEventListener('keydown',function(e){
+	if(e.code === 'r'){
+		retry = true;
+	}
+});
 
 //^300 danger(enemy) 
 var dangers=[];
