@@ -39,19 +39,29 @@ var canvas=document.getElementById('canvas');
 var can=canvas.getContext('2d');
 var animation;
 var time=99;
-var score=0;
+var score=99;
+var whatLevel='';
 var gameOver= false;
 canvas.width=600;
 canvas.height=100;
 
 //^110 gameScore
 function drawScore(){
-	x=540;
+	x=530;
 	y=40;
 	can.fillStyle='#343434';
 	can.font='36px Arial';
 	can.fillText(score,this.x,this.y);
 }
+
+function drawLevel(){
+	x=535;
+	y=20;
+	can.fillStyle='#343434';
+	can.font='24px Arial';
+	can.fillText(whatLevel,this.x,this.y);
+}
+
 
 //^111 gameOverCheck
 function crushCheck(dino,danger){
@@ -67,16 +77,26 @@ function crushCheck(dino,danger){
 //^112 gameOverDraw
 function drawGameOver(){
 	x=300;
-	y=40;
+	y=30;
 	can.fillStyle='#343434';
 	can.font='36px Arial';
 	can.fillText('GAME OVER!',this.x,this.y);
 }
+function drawGameOver2(){
+	x=300;
+	y=45;
+	can.fillStyle='#343434';
+	can.font='16px Arial';
+	can.fillText('press f5 to retry',this.x,this.y);
+}
 
 //^120 gameLevel
-var Level = { 100:0,
-	200:10,
-	300:33
+var Level={ 
+	level1:0,
+	level2:10,
+	level3:30,
+	level4:50,
+	level5:100
 };
 
 //^200 dino(Player)
@@ -101,11 +121,6 @@ document.addEventListener('keydown',function(e){
 		jump = true;
 	}
 });
-document.addEventListener('keydown',function(e){
-	if(e.code === 'r'){
-		retry = true;
-	}
-});
 
 //^300 danger(enemy) 
 var dangers=[];
@@ -125,23 +140,41 @@ class Danger{
 	}
 }
 
-
 //^400 mainGame
+var RT = Math.floor(Math.random()*40)+1; 
+
 function timer(){
 	if(!gameOver){requestAnimationFrame(timer);}
 	time++;
 	can.clearRect(0,0,canvas.width,canvas.height);
 
-	if(time%100===0){	
+	if(time%(100-RT)===0){	
 		var danger=new Danger();
 		dangers.push(danger);
+		time=0;
+		RT=Math.floor(Math.random()*40)+1;
 	}
 	dangers.forEach(function(a,i,o){
 		if(a.x< -50){
 			o.splice(i,1);
 			score++;
 		}
-		a.x-=4;
+		if(score<Level.level2){
+			whatLevel='*';
+			a.x-=4;
+		} else if(score<Level.level3){
+			whatLevel='**';
+			a.x-=6;
+		} else if(score<Level.level4){
+			whatLevel='***';
+			a.x-=10;
+		} else if(score<Level.level5){
+			whatLevel='****';
+			a.x-=12;
+		} else {
+			whatLevel='*****';
+			a.x-=15;
+		}
 		crushCheck(dino,a);
 		a.draw();
 	});
@@ -155,7 +188,7 @@ function timer(){
 		jumpTimer=-1;
 	}
 	if (dino.y <= 50 && jumpTimer==-1){
-		dino.y+=2.3;
+		dino.y+=3;
 	}	
 	if (dino.y > 50){
 		dino.y=50;
@@ -163,7 +196,8 @@ function timer(){
 	}
 	dino.draw();
 	drawScore();
-	if(gameOver){drawGameOver();};
+	drawLevel();
+	if(gameOver){drawGameOver();drawGameOver2();};	
 }
 
 //^999 playGame
