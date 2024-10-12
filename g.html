@@ -23,13 +23,12 @@ height:10vh;
 	INDEX
 	+100: basicSetting
 	 +10: gameScore
-	  +1: gameOverCheck
-	  +2: gameOverDraw
+	  +1: gameOverDraw
 	 +20: gameLevel
-	+200: dino(player)
-	 +10: dinokey
+	+200: player
 	+300: danger(enemy)
-	+400: mainGame
+	+400: crushCheck
+	+500: mainGame
 	+999: playGame
 
         ^nnn: find 
@@ -41,10 +40,6 @@ var can=canvas.getContext('2d');
 var animation;	
 canvas.width=600;
 canvas.height=100;
-var time=99;
-var score=0;
-var whatLevel='';
-var gameOver= false;
 
 //^110 gameScore
 function drawScore(){
@@ -63,20 +58,7 @@ function drawLevel(){
 	can.fillText(whatLevel,this.x,this.y);
 }
 
-
-//^111 gameOverCheck
-function crushCheck(dino,danger){
-	// 수리 필요
-	var crushx = danger.x-(dino.x+36);
-	var crushy = (danger.y+36)-dino.y;
-	if (danger.x >= 32 && crushx < 0 && crushy < 0){
-		gameOver = true;
-		can.clearRect(0,0,canvas.width,canvas.height);
-		cancelAnimationFrame(animation);
-	}
-}
-
-//^112 gameOverDraw
+//^111gameOverDraw
 function drawGameOver(){
 	x=canvas.width-300;
 	y=canvas.height-70;
@@ -102,25 +84,20 @@ var Level={
 	level5:100
 };
 
-//^200 dino(Player)
+//^200 Player
 var jump = false;
 var jumpTimer=0
-var dino={
+var player={
 	x:canvas.width-540,
 	y:canvas.height-2,
+	width:36,
+	height:36,
 	draw(){
-		can.beginPath();
-		can.moveTo(this.x,this.y);
-		can.lineTo(this.x+36,this.y);
-		can.lineTo(this.x+36,this.y+36);
-		can.lineTo(this.x,this.y+36);
-		can.closePath();
 		can.fillStyle='#343434';
-		can.fill();
-		can.stroke();
+		can.fillRect(this.x,this.y,this.width,this.height);
 	}
 }
-//^210 dinokey
+
 document.addEventListener('keydown',function(e){
 	if(e.code === 'Space'){
 		jump = true;
@@ -133,29 +110,33 @@ class Danger{
 	constructor(){
 		this.x = canvas.width+48;
 		this.y = canvas.height-2;
+		this.width=16;
+		this.height=36;
 	}
 	draw(){	
-		can.beginPath();
-		can.moveTo(this.x,this.y);
-		can.lineTo(this.x+36,this.y);
-		can.lineTo(this.x+18,this.y-36);
-		can.closePath();
 		can.fillStyle='#343434';
-		can.fill();
-		can.stroke();
+		can.fillRect(this.x,this.y,this.width,-this.height);
 	}
 }
 
-//^400 mainGame
+//^400 crushCheck
+function crushCheck(player,danger){
 
-var RT = Math.floor(Math.random()*40)+1; 
+}
+
+//^500 mainGame
+var time=99;
+var gameOver= false;
+var randomTime = Math.floor(Math.random()*40)+1; 
+var whatLevel='';
+var score=0;
 
 function timer(){
 	if(!gameOver){requestAnimationFrame(timer);}
 	time++;
 	can.clearRect(0,0,canvas.width,canvas.height);
 
-	if(time%(100-RT)===0){	
+	if(time%(100-randomTime)===0){	
 		var danger=new Danger();
 		dangers.push(danger);
 		time=0;
@@ -183,30 +164,32 @@ function timer(){
 			whatLevel='*****';
 			a.x-=15;
 		}
-		crushCheck(dino,a);
+		crushCheck(a,player);
 		a.draw();
 	});
 
-	if (jump == true && dino.y <= 62 && jumpTimer>=0){
-		dino.y-=2.4;
+	if (jump == true && player.y <= 62 && jumpTimer>=0){
+		player.y-=2.4;
 		jumpTimer++;
 	}
 	if (jumpTimer>25){
 		jump = false;
 		jumpTimer=-1;
 	}
-	if (dino.y <= 62 && jumpTimer==-1){
-		dino.y+=3;
+	if (player.y <= 62 && jumpTimer==-1){
+		player.y+=3;
 	}	
-	if (dino.y > 62){
-		dino.y=62;
+	if (player.y > 62){
+		player.y=62;
 		jumpTimer=0;
 	}
 	
-	dino.draw();
+	player.draw();
 	drawScore();
 	drawLevel();
-	if(gameOver){drawGameOver();drawGameOver2();};	
+	if(gameOver){
+		drawGameOver();drawGameOver2();
+	}	
 }
 
 //^999 playGame
