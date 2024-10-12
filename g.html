@@ -5,12 +5,13 @@
 
 <style>
 body {
-margin:0;	    
+margin:10;	    
 background-color:#343434;	    
 }
     	    
 canvas{
 background-color:#fff8e7;
+height:10vh;
 }
 
 </style></head>
@@ -37,26 +38,26 @@ background-color:#fff8e7;
 //^100 basicSetting
 var canvas=document.getElementById('canvas');	  
 var can=canvas.getContext('2d');
-var animation;
+var animation;	
+canvas.width=600;
+canvas.height=100;
 var time=99;
 var score=0;
 var whatLevel='';
 var gameOver= false;
-canvas.width=600;
-canvas.height=100;
 
 //^110 gameScore
 function drawScore(){
-	x=530;
-	y=40;
+	x=canvas.width-70;
+	y=canvas.height-60;
 	can.fillStyle='#343434';
 	can.font='36px Arial';
 	can.fillText(score,this.x,this.y);
 }
 
 function drawLevel(){
-	x=535;
-	y=20;
+	x=canvas.width-65;
+	y=canvas.height-80;
 	can.fillStyle='#343434';
 	can.font='24px Arial';
 	can.fillText(whatLevel,this.x,this.y);
@@ -65,8 +66,9 @@ function drawLevel(){
 
 //^111 gameOverCheck
 function crushCheck(dino,danger){
-	var crushx = danger.x-(dino.x+dino.width);
-	var crushy = danger.y-(dino.y+dino.height);
+	// 수리 필요
+	var crushx = danger.x-(dino.x+36);
+	var crushy = (danger.y+36)-dino.y;
 	if (danger.x >= 32 && crushx < 0 && crushy < 0){
 		gameOver = true;
 		can.clearRect(0,0,canvas.width,canvas.height);
@@ -76,15 +78,16 @@ function crushCheck(dino,danger){
 
 //^112 gameOverDraw
 function drawGameOver(){
-	x=300;
-	y=30;
+	x=canvas.width-300;
+	y=canvas.height-70;
 	can.fillStyle='#343434';
 	can.font='36px Arial';
 	can.fillText('GAME OVER!',this.x,this.y);
 }
+
 function drawGameOver2(){
-	x=300;
-	y=45;
+	x=canvas.width-300;
+	y=canvas.height-55;
 	can.fillStyle='#343434';
 	can.font='16px Arial';
 	can.fillText('press f5 to retry',this.x,this.y);
@@ -102,17 +105,19 @@ var Level={
 //^200 dino(Player)
 var jump = false;
 var jumpTimer=0
-var imgDino = new Image();
-imgDino.src = 'dino.png';
 var dino={
-	x:60,
-	y:50,
-	width:42,
-	height:48,
-	draw(){	
-		//can.fillStyle='green';
-		//can.fillRect(this.x,this.y,this.width,this.height);
-		can.drawImage(imgDino, this.x,this.y);
+	x:canvas.width-540,
+	y:canvas.height-2,
+	draw(){
+		can.beginPath();
+		can.moveTo(this.x,this.y);
+		can.lineTo(this.x+36,this.y);
+		can.lineTo(this.x+36,this.y+36);
+		can.lineTo(this.x,this.y+36);
+		can.closePath();
+		can.fillStyle='#343434';
+		can.fill();
+		can.stroke();
 	}
 }
 //^210 dinokey
@@ -124,23 +129,25 @@ document.addEventListener('keydown',function(e){
 
 //^300 danger(enemy) 
 var dangers=[];
-var imgDang = new Image();
-imgDang.src = 'danger.png';
 class Danger{
 	constructor(){
-		this.x = 648;
-		this.y = 62;
-		this.width=36;
-		this.height=36;
+		this.x = canvas.width+48;
+		this.y = canvas.height-2;
 	}
 	draw(){	
-		//can.fillStyle='red';
-		//can.fillRect(this.x,this.y,this.width,this.height);
-		can.drawImage(imgDang,this.x,this.y);
+		can.beginPath();
+		can.moveTo(this.x,this.y);
+		can.lineTo(this.x+36,this.y);
+		can.lineTo(this.x+18,this.y-36);
+		can.closePath();
+		can.fillStyle='#343434';
+		can.fill();
+		can.stroke();
 	}
 }
 
 //^400 mainGame
+
 var RT = Math.floor(Math.random()*40)+1; 
 
 function timer(){
@@ -154,6 +161,7 @@ function timer(){
 		time=0;
 		RT=Math.floor(Math.random()*40)+1;
 	}
+
 	dangers.forEach(function(a,i,o){
 		if(a.x< -50){
 			o.splice(i,1);
@@ -179,21 +187,22 @@ function timer(){
 		a.draw();
 	});
 
-	if (jump == true && dino.y <= 50 && jumpTimer>=0){
-		dino.y-=2.3;
+	if (jump == true && dino.y <= 62 && jumpTimer>=0){
+		dino.y-=2.4;
 		jumpTimer++;
 	}
-	if (jumpTimer>30){
+	if (jumpTimer>25){
 		jump = false;
 		jumpTimer=-1;
 	}
-	if (dino.y <= 50 && jumpTimer==-1){
+	if (dino.y <= 62 && jumpTimer==-1){
 		dino.y+=3;
 	}	
-	if (dino.y > 50){
-		dino.y=50;
+	if (dino.y > 62){
+		dino.y=62;
 		jumpTimer=0;
 	}
+	
 	dino.draw();
 	drawScore();
 	drawLevel();
